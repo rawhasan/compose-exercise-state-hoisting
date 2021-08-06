@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Person
@@ -34,6 +35,9 @@ fun PeopleScreen(
 ) {
     var sortAscending by remember { mutableStateOf(true) }
 
+    var name by remember { mutableStateOf("") }
+    var age by remember { mutableStateOf("") }
+
     Column {
         TopAppBar(
             title = { Text(text = stringResource(id = R.string.app_name)) },
@@ -51,6 +55,42 @@ fun PeopleScreen(
                 }
             }
         )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            TextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text(text = "Name") },
+                modifier = Modifier.fillMaxWidth(0.5f)
+            )
+
+            TextField(
+                value = age,
+                onValueChange = { age = it },
+                label = { Text(text = "Age") },
+                modifier = Modifier.width(80.dp)
+            )
+
+            Button(
+                onClick = { /*TODO*/ },
+                modifier = Modifier
+                    .width(100.dp)
+                    .height(56.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.AddCircle,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .padding(end = 8.dp)
+                )
+                Text(text = "Add")
+            }
+        }
 
         LazyColumn(
             contentPadding = PaddingValues(16.dp),
