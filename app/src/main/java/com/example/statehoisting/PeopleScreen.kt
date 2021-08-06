@@ -1,5 +1,6 @@
 package com.example.statehoisting
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -20,7 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -45,12 +46,12 @@ fun PeopleScreen(
     var sortAscending by remember { mutableStateOf(true) }
 
     var name by remember { mutableStateOf("") }
-    var spaceCount by remember { mutableStateOf(0) }
-
     var age by remember { mutableStateOf("") }
 
     // experimental api
-    var keyboardController = LocalSoftwareKeyboardController.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    val context = LocalContext.current
 
     Column {
         TopAppBar(
@@ -100,12 +101,14 @@ fun PeopleScreen(
 
             Button(
                 onClick = {
-                    if (name.trim().isNotEmpty() && age.isNotEmpty() && age.toInt() in (1..130)) {
-                        val newPerson = Person(name.trim(), age.toInt())
-                        onAddPerson(newPerson)
+                    val validatedName = formatName(name)
+
+                    if (validatedName.isNotEmpty() && age.isNotEmpty() && age.toInt() in (1..130)) {
+                        onAddPerson(Person(validatedName, age.toInt()))
                         name = ""
                         age = ""
                         keyboardController?.hide()
+                        Toast.makeText(context, "Person added", Toast.LENGTH_SHORT).show()
                     }
                 },
                 modifier = Modifier
@@ -132,6 +135,17 @@ fun PeopleScreen(
             }
         }
     }
+}
+
+private fun formatName(name: String): String {
+    // replace multiple spaces from the name
+    var validatedName = name.trim().replace("\\s+".toRegex(), " ")
+
+    // capitalize first character of each word
+    validatedName = validatedName.lowercase().split(' ')
+        .joinToString(" ", transform = { it.replaceFirstChar { char -> char.uppercase() } })
+
+    return validatedName
 }
 
 @Composable
@@ -173,5 +187,5 @@ fun PeopleRow(person: Person, onPersonClicked: (Person) -> Unit) {
 fun PeopleScreenPreview() {
     val people = PeopleDataSource().loadPeople()
 
-    PeopleScreen(people = people, onAddPerson = {}, onRemovePerson = {}, onSortPerson = { true })
+    PeopleScreen(people = people, onAddPerson = {}, onRemovePerson = {}, onSortPerson = {})
 }
