@@ -5,6 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
@@ -15,17 +17,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.text.isDigitsOnly
 import com.example.statehoisting.data.PeopleDataSource
 import com.example.statehoisting.model.Person
 
+@ExperimentalComposeUiApi
 @Composable
 fun PeopleScreen(
     people: List<Person>,
@@ -36,7 +45,12 @@ fun PeopleScreen(
     var sortAscending by remember { mutableStateOf(true) }
 
     var name by remember { mutableStateOf("") }
+    var spaceCount by remember { mutableStateOf(0) }
+
     var age by remember { mutableStateOf("") }
+
+    // experimental api
+    var keyboardController = LocalSoftwareKeyboardController.current
 
     Column {
         TopAppBar(
@@ -63,20 +77,37 @@ fun PeopleScreen(
         ) {
             TextField(
                 value = name,
-                onValueChange = { name = it },
+                onValueChange = {
+                    if (it.all { char -> char.isLetter() || char.isWhitespace() }) name = it
+                },
                 label = { Text(text = "Name") },
-                modifier = Modifier.fillMaxWidth(0.5f)
+                modifier = Modifier.fillMaxWidth(0.5f),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
             )
 
             TextField(
                 value = age,
-                onValueChange = { age = it },
+                onValueChange = { if (it.isDigitsOnly()) age = it },
                 label = { Text(text = "Age") },
-                modifier = Modifier.width(80.dp)
+                modifier = Modifier.width(80.dp),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
             )
 
             Button(
-                onClick = { /*TODO*/ },
+                onClick = {
+                    if (name.trim().isNotEmpty() && age.isNotEmpty() && age.toInt() in (1..130)) {
+                        val newPerson = Person(name.trim(), age.toInt())
+                        onAddPerson(newPerson)
+                        name = ""
+                        age = ""
+                        keyboardController?.hide()
+                    }
+                },
                 modifier = Modifier
                     .width(100.dp)
                     .height(56.dp)
@@ -136,6 +167,7 @@ fun PeopleRow(person: Person, onPersonClicked: (Person) -> Unit) {
     }
 }
 
+@ExperimentalComposeUiApi
 @Preview(showBackground = true)
 @Composable
 fun PeopleScreenPreview() {

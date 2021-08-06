@@ -11,12 +11,15 @@ class PeopleViewModel : ViewModel() {
     val people: LiveData<List<Person>>
         get() = _people
 
+    private var _isCurrentOrderAscending = true
+
     init {
         _people.value = PeopleDataSource().loadPeople().sortedBy { it.age }
     }
 
     fun addPerson(person: Person) {
         _people.value = _people.value!! + listOf(person)
+        sortPeople(_isCurrentOrderAscending)
     }
 
     fun removePerson(person: Person) {
@@ -30,5 +33,7 @@ class PeopleViewModel : ViewModel() {
             _people.value = _people.value?.sortedBy { it.age }
         else
             _people.value = _people.value?.sortedByDescending { it.age }
+
+        _isCurrentOrderAscending = ascendingOrder
     }
 }
