@@ -5,13 +5,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,10 +29,28 @@ import com.example.statehoisting.model.Person
 fun PeopleScreen(
     people: List<Person>,
     onAddPerson: (Person) -> Unit,
-    onRemovePerson: (Person) -> Unit
+    onRemovePerson: (Person) -> Unit,
+    onSortPerson: (Boolean) -> Unit
 ) {
+    var sortAscending by remember { mutableStateOf(true) }
+
     Column {
-        TopAppBar(title = { Text(text = stringResource(id = R.string.app_name)) })
+        TopAppBar(
+            title = { Text(text = stringResource(id = R.string.app_name)) },
+            actions = {
+                IconButton(onClick = {
+                    sortAscending = !sortAscending
+                    onSortPerson(sortAscending)
+                }) {
+                    Icon(
+                        imageVector = if (sortAscending) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+            }
+        )
 
         LazyColumn(
             contentPadding = PaddingValues(16.dp),
@@ -82,5 +101,5 @@ fun PeopleRow(person: Person, onPersonClicked: (Person) -> Unit) {
 fun PeopleScreenPreview() {
     val people = PeopleDataSource().loadPeople()
 
-    PeopleScreen(people = people, onAddPerson = {}, onRemovePerson = {})
+    PeopleScreen(people = people, onAddPerson = {}, onRemovePerson = {}, onSortPerson = { true })
 }

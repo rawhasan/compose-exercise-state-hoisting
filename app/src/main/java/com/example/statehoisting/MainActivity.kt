@@ -29,7 +29,8 @@ fun PeopleActivityScreen(peopleViewModel: PeopleViewModel) {
     PeopleScreen(
         people = people,
         onAddPerson = { },
-        onRemovePerson = { peopleViewModel.removePerson(it) }
+        onRemovePerson = { peopleViewModel.removePerson(it) },
+        onSortPerson = { peopleViewModel.sortPeople(it) }
     )
 }
 

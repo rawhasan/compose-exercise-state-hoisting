@@ -12,7 +12,7 @@ class PeopleViewModel : ViewModel() {
         get() = _people
 
     init {
-        _people.value = PeopleDataSource().loadPeople()
+        _people.value = PeopleDataSource().loadPeople().sortedBy { it.age }
     }
 
     fun addPerson(person: Person) {
@@ -23,5 +23,12 @@ class PeopleViewModel : ViewModel() {
         _people.value = _people.value!!.toMutableList().also {
             it.remove(person)
         }
+    }
+
+    fun sortPeople(ascendingOrder: Boolean) {
+        if (ascendingOrder)
+            _people.value = _people.value?.sortedBy { it.age }
+        else
+            _people.value = _people.value?.sortedByDescending { it.age }
     }
 }
