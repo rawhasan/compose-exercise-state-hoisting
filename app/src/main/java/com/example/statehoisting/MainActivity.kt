@@ -7,8 +7,6 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.statehoisting.model.Person
 
 class MainActivity : ComponentActivity() {
@@ -31,7 +29,7 @@ fun PeopleActivityScreen(peopleViewModel: PeopleViewModel) {
     PeopleScreen(
         people = people,
         onAddPerson = { },
-        onRemovePerson = { peopleViewModel.onRemovePerson(it) }
+        onRemovePerson = { peopleViewModel.removePerson(it) }
     )
 }
 

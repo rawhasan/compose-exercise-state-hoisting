@@ -15,11 +15,11 @@ class PeopleViewModel : ViewModel() {
         _people.value = PeopleDataSource().loadPeople()
     }
 
-    fun onAddPerson(person: Person) {
+    fun addPerson(person: Person) {
         _people.value = _people.value!! + listOf(person)
     }
 
-    fun onRemovePerson(person: Person) {
+    fun removePerson(person: Person) {
         _people.value = _people.value!!.toMutableList().also {
             it.remove(person)
         }
