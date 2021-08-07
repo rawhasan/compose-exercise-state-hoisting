@@ -5,6 +5,7 @@
 - Replace multiple spaces from an input.
 - Capitalize first character of each word in a sentence.
 - Hide keyboard on completing input successfully.  
+- Generating unique ID as model field.
 
 <br />
 
